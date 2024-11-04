@@ -1,0 +1,12 @@
+load("@rules_python//python:defs.bzl", "py_test")
+load("@inline_requirements//:requirements.bzl", "requirement")
+
+py_test(
+    name = "inline_requirements_test",
+    srcs = ["inline_requirements.py"],
+    main = "inline_requirements.py",
+    deps = [
+        requirement("numpy"),
+        requirement("requests"),
+    ],
+)

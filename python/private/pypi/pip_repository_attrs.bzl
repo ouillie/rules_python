@@ -42,9 +42,8 @@ identifiers. For now we only support `<os>_<cpu>` values that are present in
         allow_single_file = True,
         doc = """\
 A fully resolved 'requirements.txt' pip requirement file containing the
-transitive set of your dependencies. If this file is passed instead of
-'requirements' no resolve will take place and pip_repository will create
-individual repositories for each of your dependencies so that wheels are
+transitive set of your dependencies. Individual repositories
+will be created for each of your dependencies so that wheels are
 fetched/built only for the targets specified by 'build/run/test'. Note that if
 your lockfile is platform-dependent, you can use the `requirements_[platform]`
 attributes.

@@ -173,12 +173,30 @@ def _create_whl_repos(
             parallel_download = pip_attr.parallel_download,
         )
 
+    # Implement the convenience 'requirements' attribute
+    # as a generated 'requirements_lock' file.
+    if pip_attr.requirements:
+        if pip_attr.requirements_lock:
+            fail("Cannot specify both 'requirements' and 'requirements_lock'.")
+        requirements_path = "requirements.bazel.txt"
+        module_ctx.file(
+            requirements_path,
+            content = "\n".join([
+                "{}=={}".format(package, version)
+                for package, version in pip_attr.requirements.items()
+            ]),
+            executable = False,
+        )
+        requirements_lock = module_ctx.path(requirements_path)
+    else:
+        requirements_lock = pip_attr.requirements_lock
+
     requirements_by_platform = parse_requirements(
         module_ctx,
         requirements_by_platform = requirements_files_by_platform(
             requirements_by_platform = pip_attr.requirements_by_platform,
             requirements_linux = pip_attr.requirements_linux,
-            requirements_lock = pip_attr.requirements_lock,
+            requirements_lock = requirements_lock,
             requirements_osx = pip_attr.requirements_darwin,
             requirements_windows = pip_attr.requirements_windows,
             extra_pip_args = pip_attr.extra_pip_args,
@@ -635,6 +653,12 @@ def _pip_parse_ext_attrs(**kwargs):
         A dict of attributes.
     """
     attrs = dict({
+        "requirements": attr.string_dict(
+            doc = """\
+Equivalent to 'requirements_lock' except that dependencies are specified as an
+in-line dictionary, where keys are package names and values are version strings.
+""",
+        ),
         "experimental_extra_index_urls": attr.string_list(
             doc = """\
 The extra index URLs to use for downloading wheels using bazel downloader.

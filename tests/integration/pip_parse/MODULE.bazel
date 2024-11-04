@@ -17,4 +17,17 @@ pip.parse(
     python_version = "3.9",
     requirements_lock = "//empty:requirements.txt",
 )
-use_repo(pip, "pip_empty")
+pip.parse(
+    hub_name = "inline_requirements",
+    python_version = "3.9",
+    requirements = {
+        "numpy": "2.0.2",
+        "requests": "2.32.3",
+        # Transitive dependencies of requests:
+        "urllib3": "2.2.3",
+        "charset-normalizer": "3.4.0",
+        "idna": "3.10",
+        "certifi": "2024.8.30",
+    },
+)
+use_repo(pip, "pip_empty", "inline_requirements")
